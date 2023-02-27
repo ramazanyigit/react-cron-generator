@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import cronstrue from 'cronstrue/i18n';
-import { metadata, loadHeaders, HeaderKeyType, HeaderValType } from './meta';
+import React, { useEffect, useState } from 'react';
 import './cron-builder.css';
+import { HeaderKeyType, HeaderValType, loadHeaders, metadata } from './meta';
 interface CronProp {
     value?: string
     onChange(val: string, text: string): void
@@ -21,7 +21,7 @@ const defaultCron = '0 0 00 1/1 * ? *';
 const Cron: React.FunctionComponent<CronProp>  = (props) => {
     const [state, setState] = useState<State>({value:[], headers: loadHeaders(props.options), locale: props.locale ? props.locale : 'en'})
     useEffect(()=> {
-        setValue(props.value ? props.value : "") 
+        setValue(props.value ? props.value : "")
         if(props.translateFn && !props.locale) {
             console.log('Warning !!! locale not set while using translateFn');
         }
@@ -34,7 +34,7 @@ const Cron: React.FunctionComponent<CronProp>  = (props) => {
         newVal = state.value.toString().replace(/,/g,' ');
         newVal = newVal.replace(/!/g, ',');
         if(props.value !== newVal) {
-            setValue(props.value ? props.value : "") 
+            setValue(props.value ? props.value : "")
         }
     }, [props.value])
     useEffect(() => {
@@ -72,7 +72,8 @@ const Cron: React.FunctionComponent<CronProp>  = (props) => {
         if(!prevState.headers.includes(prevState.selectedTab)) {
             prevState.selectedTab = prevState.headers[0]
         }
-        setState(prevState)
+
+        setState({ ...prevState })
     }
     const tabChanged = (tab: HeaderValType) => {
         if(state.selectedTab !== tab) {
@@ -84,10 +85,10 @@ const Cron: React.FunctionComponent<CronProp>  = (props) => {
             return <li className="nav-item" key={index} ><a className={`nav-link ${state.selectedTab === d ? 'active' : ''}`} onClick={()=> tabChanged(d)}>{translate(d)}</a></li>
         })
     }
-    const onValueChange = (val: string[]) => {     
+    const onValueChange = (val: string[]) => {
         if(val && val.length) {
             setState({ ...state, value: [...val] });
-        } else { 
+        } else {
             val = ['0','0','00','1/1','*','?','*']
             setState({ ...state, value:  val});
         }
@@ -96,14 +97,14 @@ const Cron: React.FunctionComponent<CronProp>  = (props) => {
         let newVal = '';
         newVal = val.toString().replace(/,/g,' ');
         newVal = newVal.replace(/!/g, ',');
-        props.onChange(newVal, getVal()) 
+        props.onChange(newVal, getVal())
     }
     const getVal = () => {
         let val = cronstrue.toString(state.value.toString().replace(/,/g,' ').replace(/!/g, ','), { throwExceptionOnParseError: false, locale: state.locale })
         if(val.search('undefined') === -1) {
             return val;
         }
-        return '-';   
+        return '-';
     }
 
     const defaultValue = (tab: HeaderValType): string[] => {
@@ -136,14 +137,14 @@ const Cron: React.FunctionComponent<CronProp>  = (props) => {
         return translatedText;
     }
 
-    return (    
+    return (
         <div className='cron_builder'>
         <ul className="nav nav-tabs" >
             {getHeaders()}
         </ul>
         <div className="cron_builder_bordering">{state.selectedTab ? getComponent(state.selectedTab) : "Select a header"}</div>
         {props.showResultText && <div className="cron-builder-bg">{getVal()}</div>}
-        {props.showResultCron && <div className="cron-builder-bg">{state.value.toString().replace(/,/g,' ').replace(/!/g, ',')}</div>}       
+        {props.showResultCron && <div className="cron-builder-bg">{state.value.toString().replace(/,/g,' ').replace(/!/g, ',')}</div>}
     </div>)
 }
 export default Cron
